@@ -45,16 +45,20 @@ const MATERIAL_DATA = [
 ];
 
 export default function QuotationForm({
-  metalType, setMetalType,
-  material, setMaterial,
-  grade, setGrade,
-  size, setSize,
-  thk, setThk,
-  finish, setFinish,
-  usage, setUsage,
-  priceMode, setPriceMode,
-  standardPrice, setStandardPrice
+  materials: addedMaterials,
+  setMaterials: setAddedMaterials
 }) {
+  // Local state for the material being built
+  const [metalType, setMetalType] = useState('');
+  const [material, setMaterial] = useState('');
+  const [grade, setGrade] = useState('');
+  const [size, setSize] = useState('');
+  const [thk, setThk] = useState('');
+  const [finish, setFinish] = useState('');
+  const [usage, setUsage] = useState('');
+  const [priceMode, setPriceMode] = useState('');
+  const [standardPrice, setStandardPrice] = useState('');
+
   const metalTypes = useMemo(() => [...new Set(MATERIAL_DATA.map(item => item.metalType))], []);
   
   const materials = useMemo(() => 
@@ -133,6 +137,39 @@ export default function QuotationForm({
   const handleThkChange = (e) => {
     setThk(e.target.value);
     setFinish('');
+  };
+
+  const addMaterial = () => {
+    if (metalType && material && standardPrice) {
+      const newMaterial = {
+        id: Date.now().toString(),
+        metalType,
+        material,
+        grade,
+        size,
+        thk,
+        finish,
+        usage,
+        priceMode,
+        standardPrice
+      };
+      setAddedMaterials([...addedMaterials, newMaterial]);
+      
+      // Reset form
+      setMetalType('');
+      setMaterial('');
+      setGrade('');
+      setSize('');
+      setThk('');
+      setFinish('');
+      setUsage('');
+      setPriceMode('');
+      setStandardPrice('');
+    }
+  };
+
+  const removeMaterial = (id) => {
+    setAddedMaterials(addedMaterials.filter(mat => mat.id !== id));
   };
 
   return (
@@ -275,6 +312,80 @@ export default function QuotationForm({
             <option value="75">75%</option>
             <option value="100">100%</option>
           </select>
+        <div className="flex flex-col md:col-span-2 mt-4">
+          <button 
+            type="button"
+            onClick={addMaterial}
+            disabled={!metalType || !material || !standardPrice}
+            className="w-full px-4 py-2.5 text-sm bg-black text-white rounded-lg hover:bg-gray-800 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed dark:bg-black dark:hover:bg-gray-900"
+          >
+            Add Material
+          </button>
+        </div>
+      </div>
+      </div>
+
+      {/* Added Materials Table */}
+      <div className="mt-8 border-t border-gray-100 dark:border-gray-700 pt-6">
+        <h3 className="text-gray-700 font-bold mb-4 dark:text-gray-200">Added Materials</h3>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden">
+            <thead className="bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
+              <tr>
+                <th className="px-3 py-2 text-left border-b dark:border-gray-600 font-medium whitespace-nowrap">Material</th>
+                <th className="px-3 py-2 text-left border-b dark:border-gray-600 font-medium whitespace-nowrap">Format</th>
+                <th className="px-3 py-2 text-center border-b dark:border-gray-600 font-medium whitespace-nowrap">Settings</th>
+                <th className="px-3 py-2 text-right border-b dark:border-gray-600 font-medium whitespace-nowrap">Cost</th>
+                <th className="px-3 py-2 text-center border-b dark:border-gray-600 font-medium"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {addedMaterials.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="px-3 py-6 text-center text-gray-400 text-xs italic">No materials added to configuration yet</td>
+                </tr>
+              ) : (
+                addedMaterials.map((mat) => {
+                  const items = parseInt(mat.priceMode) || 1;
+                  const price = parseFloat(mat.standardPrice) || 0;
+                  const subtotal = items * price;
+
+                  return (
+                    <tr key={mat.id} className="border-b dark:border-gray-600 last:border-b-0 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors">
+                      <td className="px-3 py-3">
+                        <div className="font-medium text-gray-800 dark:text-gray-200">{mat.metalType}</div>
+                        <div className="text-xs text-gray-500">{mat.grade} • {mat.finish}</div>
+                      </td>
+                      <td className="px-3 py-3">
+                        <div className="font-medium">{mat.material}</div>
+                        <div className="text-xs text-gray-500">{mat.size} • {mat.thk}</div>
+                      </td>
+                      <td className="px-3 py-3 text-center">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-gray-700 dark:text-blue-300">
+                          {items} @ OMR {price}
+                        </span>
+                      </td>
+                      <td className="px-3 py-3 text-right font-medium">
+                        OMR {(subtotal).toFixed(2)}
+                      </td>
+                      <td className="px-3 py-3 text-center">
+                        <button 
+                          onClick={() => removeMaterial(mat.id)}
+                          className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors p-1"
+                          title="Remove Material"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                          </svg>
+                        </button>
+                      </td>
+                    </tr>
+                  )
+                })
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
