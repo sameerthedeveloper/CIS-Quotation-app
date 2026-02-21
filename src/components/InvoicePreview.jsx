@@ -314,38 +314,34 @@ const Quotation = ({ quotation }) => {
           </table>
 
           {/* Details Table */}
-          <table className="w-full table-auto border border-gray-300 dark:border-gray-600 border-collapse mb-4 text-left text-xs">
-              <tbody>
-                  <tr className="border border-gray-300 dark:border-gray-600">
-                      <th className="p-2 bg-gray-100 dark:bg-gray-700 dark:text-white w-1/2">Metal Type</th>
-                      <td className="p-2">{quotation.metalType}</td>
-                  </tr>
-                  <tr className="border border-gray-300 dark:border-gray-600">
-                      <th className="p-2 bg-gray-100 dark:bg-gray-700 dark:text-white">Material</th>
-                      <td className="p-2">{quotation.material}</td>
-                  </tr>
-                  <tr className="border border-gray-300 dark:border-gray-600">
-                      <th className="p-2 bg-gray-100 dark:bg-gray-700 dark:text-white">Grade</th>
-                      <td className="p-2">{quotation.grade}</td>
-                  </tr>
-                  <tr className="border border-gray-300 dark:border-gray-600">
-                      <th className="p-2 bg-gray-100 dark:bg-gray-700 dark:text-white">Size</th>
-                      <td className="p-2">{quotation.size}</td>
-                  </tr>
-                  <tr className="border border-gray-300 dark:border-gray-600">
-                      <th className="p-2 bg-gray-100 dark:bg-gray-700 dark:text-white">Thickness</th>
-                      <td className="p-2">{quotation.thk}</td>
-                  </tr>
-                   <tr className="border border-gray-300 dark:border-gray-600">
-                      <th className="p-2 bg-gray-100 dark:bg-gray-700 dark:text-white">Finish</th>
-                      <td className="p-2">{quotation.finish}</td>
-                  </tr>
-                  <tr className="border border-gray-300 dark:border-gray-600">
-                      <th className="p-2 bg-gray-100 dark:bg-gray-700 dark:text-white">Usage</th>
-                      <td className="p-2">{quotation.usage}</td>
-                  </tr>
-              </tbody>
-          </table>
+          {quotation.materials && quotation.materials.length > 0 && (
+            <table className="w-full table-auto border border-gray-300 dark:border-gray-600 border-collapse mb-4 text-left text-xs">
+                <thead className="bg-gray-100 dark:bg-gray-700 dark:text-white">
+                    <tr>
+                        <th className="p-2 border border-gray-300 dark:border-gray-600">Metal Type</th>
+                        <th className="p-2 border border-gray-300 dark:border-gray-600">Material</th>
+                        <th className="p-2 border border-gray-300 dark:border-gray-600">Grade</th>
+                        <th className="p-2 border border-gray-300 dark:border-gray-600">Size</th>
+                        <th className="p-2 border border-gray-300 dark:border-gray-600">Thk</th>
+                        <th className="p-2 border border-gray-300 dark:border-gray-600">Finish</th>
+                        <th className="p-2 border border-gray-300 dark:border-gray-600">Usage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {quotation.materials.map((mat, index) => (
+                      <tr key={index} className="border border-gray-300 dark:border-gray-600">
+                          <td className="p-2 border border-gray-300 dark:border-gray-600">{mat.metalType}</td>
+                          <td className="p-2 border border-gray-300 dark:border-gray-600">{mat.material}</td>
+                          <td className="p-2 border border-gray-300 dark:border-gray-600">{mat.grade}</td>
+                          <td className="p-2 border border-gray-300 dark:border-gray-600">{mat.size}</td>
+                          <td className="p-2 border border-gray-300 dark:border-gray-600">{mat.thk}</td>
+                          <td className="p-2 border border-gray-300 dark:border-gray-600">{mat.finish}</td>
+                          <td className="p-2 border border-gray-300 dark:border-gray-600">{mat.usage}%</td>
+                      </tr>
+                    ))}
+                </tbody>
+            </table>
+          )}
 
           {/* Pricing Table */}
           <table className="w-full table-auto border border-gray-300 dark:border-gray-600 border-collapse text-left mb-4 text-xs">

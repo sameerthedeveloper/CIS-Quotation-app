@@ -21,16 +21,8 @@ function App() {
   const [customerPhone, setCustomerPhone] = useState('');
   const [quotationDate, setQuotationDate] = useState(new Date().toISOString().split('T')[0]);
 
-  // Quotation Form State
-  const [metalType, setMetalType] = useState('');
-  const [material, setMaterial] = useState('');
-  const [grade, setGrade] = useState('');
-  const [size, setSize] = useState('');
-  const [thk, setThk] = useState('');
-  const [finish, setFinish] = useState('');
-  const [usage, setUsage] = useState('');
-  const [priceMode, setPriceMode] = useState('');
-  const [standardPrice, setStandardPrice] = useState('');
+  // Quotation Form State (Materials)
+  const [materials, setMaterials] = useState([]);
 
   // Computed Values for Quotation
   const accessoriesPrice = accessories.reduce((sum, item) => sum + item.price, 0);
@@ -38,9 +30,11 @@ function App() {
   const accessoriesVAT = accessoriesPrice * 0.05; 
   
   // Calculate Material Price
-  const sheetCount = parseInt(priceMode) || 1;
-  const perSheetPrice = parseFloat(standardPrice) || 0;
-  const matPrice = sheetCount * perSheetPrice;
+  const matPrice = materials.reduce((sum, item) => {
+    const sheetCount = parseInt(item.priceMode) || 1;
+    const perSheetPrice = parseFloat(item.standardPrice) || 0;
+    return sum + (sheetCount * perSheetPrice);
+  }, 0);
   const materialVAT = matPrice * 0.05;
 
   // Calculate Wood Work Price
@@ -56,15 +50,9 @@ function App() {
     customerEmail: customerEmail,
     customerPhone: customerPhone,
     quotationDate: quotationDate,
-    metalType: metalType || '-',
-    material: material || '-',
-    grade: grade || '-',
-    size: size || '-',
-    thk: thk || '-',
-    finish: finish || '-',
-    usage: usage || '-',
-    materialPrice: matPrice ? `OMR ${matPrice.toFixed(2)}` : '-',
-    materialVAT: materialVAT ? `OMR ${(matPrice + materialVAT).toFixed(2)}` : '-',
+    materials: materials,
+    materialPrice: matPrice > 0 ? `OMR ${matPrice.toFixed(2)}` : '-',
+    materialVAT: materialVAT > 0 ? `OMR ${(matPrice + materialVAT).toFixed(2)}` : '-',
     woodWorkPrice: woodPrice > 0 ? `OMR ${woodPrice.toFixed(2)}` : '-',
     woodWorkVAT: woodPrice > 0 ? `OMR ${(woodPrice + woodVAT).toFixed(2)}` : '-',
     accessories: accessories,
@@ -92,15 +80,8 @@ function App() {
         <div className={`w-full lg:w-1/2 h-full overflow-scroll scrollbar-hide border-r border-gray-200 p-4 ${activeTab === 'home' ? '' : 'hidden lg:block'}`}>
           <div className="flex flex-col gap-4">
             <QuotationForm 
-              metalType={metalType} setMetalType={setMetalType}
-              material={material} setMaterial={setMaterial}
-              grade={grade} setGrade={setGrade}
-              size={size} setSize={setSize}
-              thk={thk} setThk={setThk}
-              finish={finish} setFinish={setFinish}
-              usage={usage} setUsage={setUsage}
-              priceMode={priceMode} setPriceMode={setPriceMode}
-              standardPrice={standardPrice} setStandardPrice={setStandardPrice}
+              materials={materials} 
+              setMaterials={setMaterials}
             />
             
             <AccessoriesPanel 
