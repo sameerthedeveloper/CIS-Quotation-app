@@ -42,3 +42,12 @@
       scrollbar-width: none;  /* Firefox */
   }
 }
+
+@layer base {
+  html, body {
+    /* Disable double-tap and pinch zoom on touchscreens */
+    touch-action: pan-x pan-y;
+    /* Prevent pull-to-refresh bouncing */
+    overscroll-behavior-y: none; 
+  }
+}
